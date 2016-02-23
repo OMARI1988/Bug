@@ -31,8 +31,10 @@ class Tracker(object):
         self._N_max = len(self._frames)
 
         self._root = tk.Tk()
-        self._w = tk.Scale(self._root, from_=0, to=self._N_max, length=1000, orient=tk.HORIZONTAL)
+        self._w = tk.Scale(self._root, from_=0, to=self._N_max-1, length=1000, orient=tk.HORIZONTAL)
+        self._w_flag = 0
         self._w.pack()
+        self._w.bind("<Button-1>", self._callback2)
         self._root.bind('<Escape>', lambda e: self._root.quit())
         self._lmain = tk.Label(self._root)
         self._lmain.bind("<Button-1>", self._callback)
@@ -40,6 +42,9 @@ class Tracker(object):
 
         self._fgbg1 = cv2.BackgroundSubtractorMOG(100,10,.03,0)
         self._fgbg2 = cv2.BackgroundSubtractorMOG2(0,150,False)
+
+    def _callback2(self,event):
+        self._w_flag=1
 
     def _callback(self,event):
         print "clicked at", event.x, event.y
@@ -51,18 +56,20 @@ class Tracker(object):
             self._Track_flag = 1
 
     def _show_frame(self):
+        self._frame = self._frames[self._N]
+        self._track_frame()
         if self._Track_flag:
-            self._frame = self._frames[self._N]
-            self._track_frame()
             self._N += 1
-            self._image = cv2.cvtColor(self._frame, cv2.COLOR_BGR2RGBA)
-            img = Image.fromarray(self._image)
-            imgtk = ImageTk.PhotoImage(image=img)
-            self._lmain.imgtk = imgtk
-            self._lmain.configure(image=imgtk)
-            if self._N==self._Stop_frame:
-                self._Track_flag = 0
+        self._image = cv2.cvtColor(self._frame, cv2.COLOR_BGR2RGBA)
+        img = Image.fromarray(self._image)
+        imgtk = ImageTk.PhotoImage(image=img)
+        self._lmain.imgtk = imgtk
+        self._lmain.configure(image=imgtk)
+        if self._N==self._Stop_frame:
+            self._Track_flag = 0
         self._lmain.after(10, self._show_frame)
+        if self._w_flag == 1:
+            self._N = self._w.get()
 
     def _track_frame(self):
         gray_image = cv2.cvtColor(self._frame, cv2.COLOR_BGR2GRAY)
