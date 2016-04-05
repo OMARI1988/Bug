@@ -19,7 +19,7 @@ class Tracker(object):
         self._HSV_tuples = [(x*1.0/self._Max_Track_number, 1.0, 1.0) for x in range(self._Max_Track_number)]
         self._colors = map(lambda x: colorsys.hsv_to_rgb(*x), self._HSV_tuples)
 
-        self._cap = cv2.VideoCapture('/home/omari/Bugs/movies/CS1_not_tracking.avi')
+        self._cap = cv2.VideoCapture('/home/omari/Datasets_old/Zak/Calopteryx splendens/Calibration group 1/AV_Z_BD1_Seq1_020715.avi')
         self._frames = []
         while(1):
             ret, frame = self._cap.read()
